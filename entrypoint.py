@@ -95,7 +95,7 @@ def check_commit(head_repo: str, sha: str) -> None:
     status = status_resp.json()
 
     state = status["state"]
-    if state != "success":
+    if state == "error" or state == "failure":
         debug(f"Commit status is {state}")
         failed = "\n".join(["* %s" % s["context"] for s in status["statuses"]])
         raise DeploymentFailure(
@@ -163,17 +163,17 @@ def validate_pr(pr: dict) -> None:
     if pr["state"] != "open":
         raise DeploymentFailure("Can't deploy a PR which isn't open.")
     mergeable_state = pr["mergeable_state"]
-    if mergeable_state != "mergeable":
-        if mergeable_state == "draft" and CONFIG["allow_draft"]:
-            pass
-        # blocked = some checks still in progress. unstable = some checks failed
-        elif (
-            mergeable_state in ("blocked", "unstable")
-            and CONFIG["ignore_status_checks"]
-        ):
-            pass
-        else:
-            raise DeploymentFailure("PR can't be cleanly merged with base branch.")
+    if ((mergeable_state == "draft" and CONFIG["allow_draft"]) or
+            mergeable_state == "clean"):
+        pass
+    # blocked = some checks still in progress. unstable = some checks failed
+    elif (
+        mergeable_state in ("blocked", "unstable")
+        and CONFIG["ignore_status_checks"]
+    ):
+        pass
+    else:
+        raise DeploymentFailure("PR can't be cleanly merged with base branch.")
 
 
 def validate_event(event):

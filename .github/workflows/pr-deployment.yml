@@ -1,0 +1,52 @@
+name: Deploy Pull Request
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  deploy:
+    name: Deploy branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create deployment
+        id: create_deployment
+        uses: alexjurkiewicz/pr-comment-github-deployment@master
+        with:
+          trigger_phrase: "/deploy"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set deployment status to in progress
+        id: start_deployment
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/:repository/deployments/:deployment/statuses
+          repository: ${{ github.repository }}
+          deployment: ${{ steps.create_deployment.outputs.deployment_id }}
+          environment_url: https://example.com
+          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          state: in_progress
+          mediaType: '{"previews": ["flash", "ant-man"]}'
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
+      - name: deploy the pull request
+        run: |
+          # deployment logic goes here
+          sleep 30
+          # always succeed
+          exit 0
+      - name: set deployment status to success
+        id: successful_deployment
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/:repository/deployments/:deployment/statuses
+          repository: ${{ github.repository }}
+          deployment: ${{ steps.create_deployment.outputs.deployment_id }}
+          environment_url: https://example.com
+          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          mediaType: '{"previews": ["ant-man"]}'
+          state: success
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'

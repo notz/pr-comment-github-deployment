@@ -17,13 +17,14 @@ jobs:
 
 ## Parameters
 
-| Parameter | Required | Description |
-| --- | --- | --- |
-| trigger_phrase | Optional. Default: `deploy to` | Trigger phrase you want to activate on. This action will take the remainder of the comment body as the environment, eg a message of `deploy to web3` will trigger a deployment to `web3`. |
+| Parameter                   | Required | Description                                                                                                                                                                                        |
+|-----------------------------| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| trigger_phrase              | Optional. Default: `deploy to` | Trigger phrase you want to activate on. This action will take the remainder of the comment body as the environment, eg a message of `deploy to web3` will trigger a deployment to `web3`.          |
 | environment_validation_file | Optional. Default: unset | If specified, this is a JSON file in your repository that defines a whitelist of acceptable environments, as well as metadata about them. [See below for more info.](#environment_validation_file) |
-| allow_draft | Optional. Default: `false` | If set to `true`, you can deploy draft PRs. |
-| ignore_status_checks | Optional. Default: `false` | If set to `true`, you can deploy PRs with pending/failed status checks. |
-| comment | Optional. Default: `true` | If set to `false`, comments will not be posted to the pull request. |
+| allow_draft                 | Optional. Default: `false` | If set to `true`, you can deploy draft PRs.                                                                                                                                                        |
+| ignore_status_checks        | Optional. Default: `false` | If set to `true`, you can deploy PRs with pending/failed status checks.                                                                                                                            |
+| comment                     | Optional. Default: `true` | If set to `false`, comments will not be posted to the pull request.                                                                                                                                |
+| auto_merge                  | Optional. Default: `true` | If set to `false`, default branch will not be merged.                                                                                                                                              |
 
 ### Environment Variables
 

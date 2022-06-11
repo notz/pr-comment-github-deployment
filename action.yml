@@ -23,6 +23,10 @@ inputs:
     description: If set to `false`, comments will not be posted to the pull request.
     required: false
     default: true
+  auto_merge:
+    description: If set to `false`, default branch will not be merged.
+    required: false
+    default: true
 outputs:
   deployment_id:
     description: GitHub's ID for this deployment.

@@ -118,6 +118,7 @@ def trigger_deployment(
         "description": description,
         "transient_environment": transient,
         "production_environment": production,
+        "auto_merge": CONFIG["auto_merge"]
     }
     if CONFIG["ignore_status_checks"]:
         params["required_contexts"] = []
@@ -226,6 +227,7 @@ if __name__ == "__main__":
         ).lower()
         == "true",
         "comment": os.environ.get("INPUT_COMMENT", "true").lower() == "true",
+        "auto_merge": os.environ.get("INPUT_AUTO_MERGE", "true").lower() == "true",
     }
     debug(f"Config: {json.dumps(CONFIG)}")
 

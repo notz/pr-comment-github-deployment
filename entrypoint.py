@@ -151,9 +151,11 @@ def set_deployment_outputs(deployment_response):
     _id = deployment["id"]
     api_url = deployment["url"]
     environment = deployment["environment"]
+    sha = deployment["sha"]
     print(f"::set-output name=deployment_id::{_id}")
     print(f"::set-output name=deployment_api_url::{api_url}")
     print(f"::set-output name=deployment_environment::{environment}")
+    print(f"::set-output name=deployment_sha::{sha}")
 
 
 def validate_pr(pr: dict) -> None:

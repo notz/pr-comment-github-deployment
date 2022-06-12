@@ -39,6 +39,7 @@ If you give this action's step an `id`, you can access the following outputs:
 | deployment_id          | GitHub's ID for this deployment. |
 | deployment_api_url     | [URL to read deployment information.](https://developer.github.com/v3/repos/deployments/#get-a-single-deployment) |
 | deployment_environment | The name of the environment that was deployed to |
+| deployment_sha         | The SHA recorded at creation time |
 
 ## `environment_validation_file`
 

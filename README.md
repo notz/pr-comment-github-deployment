@@ -34,10 +34,11 @@ You must pass in `GITHUB_TOKEN`. It requires read & write access to both the hea
 
 If you give this action's step an `id`, you can access the following outputs:
 
-| Output  | Description |
-| --- | --- |
-| deployment_id | GitHub's ID for this deployment. |
-| deployment_api_url | [URL to read deployment information.](https://developer.github.com/v3/repos/deployments/#get-a-single-deployment) |
+| Output                 | Description |
+|------------------------| -- |
+| deployment_id          | GitHub's ID for this deployment. |
+| deployment_api_url     | [URL to read deployment information.](https://developer.github.com/v3/repos/deployments/#get-a-single-deployment) |
+| deployment_environment | The name of the environment that was deployed to |
 
 ## `environment_validation_file`
 

@@ -32,6 +32,8 @@ outputs:
     description: GitHub's ID for this deployment.
   deployment_api_url:
     description: URL to read deployment information.
+  deployment_environment:
+    description: The name of the environment that was deployed to
 runs:
   using: docker
   image: Dockerfile

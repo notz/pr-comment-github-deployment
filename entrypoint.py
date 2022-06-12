@@ -150,8 +150,10 @@ def set_deployment_outputs(deployment_response):
     deployment = deployment_response.json()
     _id = deployment["id"]
     api_url = deployment["url"]
+    environment = deployment["environment"]
     print(f"::set-output name=deployment_id::{_id}")
     print(f"::set-output name=deployment_api_url::{api_url}")
+    print(f"::set-output name=deployment_environment::{environment}")
 
 
 def validate_pr(pr: dict) -> None:

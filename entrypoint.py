@@ -151,22 +151,6 @@ def _sanitize_value(value: Any) -> str:
     return str(value).replace('\n', ' ').replace('\r', ' ')
 
 
-def _output_using_deprecated_format(_id: Any, api_url: str, environment: str, sha: str, sha7: str) -> None:
-    """Helper function to output deployment data using deprecated ::set-output format."""
-    # Sanitize values to prevent newline injection attacks
-    safe_id = _sanitize_value(_id)
-    safe_api_url = _sanitize_value(api_url)
-    safe_environment = _sanitize_value(environment)
-    safe_sha = _sanitize_value(sha)
-    safe_sha7 = _sanitize_value(sha7)
-    
-    print(f"::set-output name=deployment_id::{safe_id}")
-    print(f"::set-output name=deployment_api_url::{safe_api_url}")
-    print(f"::set-output name=deployment_environment::{safe_environment}")
-    print(f"::set-output name=deployment_sha::{safe_sha}")
-    print(f"::set-output name=deployment_sha7::{safe_sha7}")
-
-
 def set_deployment_outputs(deployment_response: requests.Response) -> None:
     # Set outputs
     deployment = deployment_response.json()
@@ -176,24 +160,16 @@ def set_deployment_outputs(deployment_response: requests.Response) -> None:
     sha = deployment["sha"]
     sha7 = sha[0:7]
     
-    # Use new GITHUB_OUTPUT format if available, otherwise fall back to deprecated ::set-output
+    # Write outputs to GITHUB_OUTPUT file
     github_output = os.environ.get("GITHUB_OUTPUT")
     if github_output:
-        try:
-            with open(github_output, "a") as f:
-                # Sanitize values to prevent newline injection attacks
-                f.write(f"deployment_id={_sanitize_value(_id)}\n")
-                f.write(f"deployment_api_url={_sanitize_value(api_url)}\n")
-                f.write(f"deployment_environment={_sanitize_value(environment)}\n")
-                f.write(f"deployment_sha={_sanitize_value(sha)}\n")
-                f.write(f"deployment_sha7={_sanitize_value(sha7)}\n")
-        except (IOError, OSError) as e:
-            error(f"Failed to write to GITHUB_OUTPUT file: {e}")
-            # Fall back to deprecated format if file write fails
-            _output_using_deprecated_format(_id, api_url, environment, sha, sha7)
-    else:
-        # Backward compatibility: use deprecated ::set-output format
-        _output_using_deprecated_format(_id, api_url, environment, sha, sha7)
+        with open(github_output, "a") as f:
+            # Sanitize values to prevent newline injection attacks
+            f.write(f"deployment_id={_sanitize_value(_id)}\n")
+            f.write(f"deployment_api_url={_sanitize_value(api_url)}\n")
+            f.write(f"deployment_environment={_sanitize_value(environment)}\n")
+            f.write(f"deployment_sha={_sanitize_value(sha)}\n")
+            f.write(f"deployment_sha7={_sanitize_value(sha7)}\n")
 
 
 def validate_pr(pr: dict) -> None:

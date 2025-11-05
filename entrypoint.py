@@ -145,12 +145,12 @@ def trigger_deployment(
     set_deployment_outputs(trigger_resp)
 
 
-def _sanitize_value(value):
+def _sanitize_value(value) -> str:
     """Sanitize a value to prevent newline injection attacks."""
     return str(value).replace('\n', ' ').replace('\r', ' ')
 
 
-def _output_using_deprecated_format(_id, api_url, environment, sha, sha7):
+def _output_using_deprecated_format(_id, api_url: str, environment: str, sha: str, sha7: str) -> None:
     """Helper function to output deployment data using deprecated ::set-output format."""
     # Sanitize values to prevent newline injection attacks
     safe_id = _sanitize_value(_id)

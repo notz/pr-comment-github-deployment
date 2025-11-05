@@ -157,12 +157,21 @@ def set_deployment_outputs(deployment_response):
     # Use new GITHUB_OUTPUT format if available, otherwise fall back to deprecated ::set-output
     github_output = os.environ.get("GITHUB_OUTPUT")
     if github_output:
-        with open(github_output, "a") as f:
-            f.write(f"deployment_id={_id}\n")
-            f.write(f"deployment_api_url={api_url}\n")
-            f.write(f"deployment_environment={environment}\n")
-            f.write(f"deployment_sha={sha}\n")
-            f.write(f"deployment_sha7={sha7}\n")
+        try:
+            with open(github_output, "a") as f:
+                f.write(f"deployment_id={_id}\n")
+                f.write(f"deployment_api_url={api_url}\n")
+                f.write(f"deployment_environment={environment}\n")
+                f.write(f"deployment_sha={sha}\n")
+                f.write(f"deployment_sha7={sha7}\n")
+        except (IOError, OSError) as e:
+            error(f"Failed to write to GITHUB_OUTPUT file: {e}")
+            # Fall back to deprecated format if file write fails
+            print(f"::set-output name=deployment_id::{_id}")
+            print(f"::set-output name=deployment_api_url::{api_url}")
+            print(f"::set-output name=deployment_environment::{environment}")
+            print(f"::set-output name=deployment_sha::{sha}")
+            print(f"::set-output name=deployment_sha7::{sha7}")
     else:
         # Backward compatibility: use deprecated ::set-output format
         print(f"::set-output name=deployment_id::{_id}")

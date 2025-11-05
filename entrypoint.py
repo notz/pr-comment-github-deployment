@@ -16,7 +16,7 @@ def debug(msg: str) -> None:
 
 
 def error(msg: str) -> None:
-    print(f"::error ::{msg}")
+    print(f"::error::{msg}")
 
 
 def add_comment(url: str, msg: str, is_error: bool = False) -> None:

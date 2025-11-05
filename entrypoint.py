@@ -153,11 +153,23 @@ def set_deployment_outputs(deployment_response):
     environment = deployment["environment"]
     sha = deployment["sha"]
     sha7 = sha[0:7]
-    print(f"::set-output name=deployment_id::{_id}")
-    print(f"::set-output name=deployment_api_url::{api_url}")
-    print(f"::set-output name=deployment_environment::{environment}")
-    print(f"::set-output name=deployment_sha::{sha}")
-    print(f"::set-output name=deployment_sha7::{sha7}")
+    
+    # Use new GITHUB_OUTPUT format if available, otherwise fall back to deprecated ::set-output
+    github_output = os.environ.get("GITHUB_OUTPUT")
+    if github_output:
+        with open(github_output, "a") as f:
+            f.write(f"deployment_id={_id}\n")
+            f.write(f"deployment_api_url={api_url}\n")
+            f.write(f"deployment_environment={environment}\n")
+            f.write(f"deployment_sha={sha}\n")
+            f.write(f"deployment_sha7={sha7}\n")
+    else:
+        # Backward compatibility: use deprecated ::set-output format
+        print(f"::set-output name=deployment_id::{_id}")
+        print(f"::set-output name=deployment_api_url::{api_url}")
+        print(f"::set-output name=deployment_environment::{environment}")
+        print(f"::set-output name=deployment_sha::{sha}")
+        print(f"::set-output name=deployment_sha7::{sha7}")
 
 
 def validate_pr(pr: dict) -> None:

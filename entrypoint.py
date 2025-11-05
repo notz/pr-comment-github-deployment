@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+from typing import Any
 
 import requests
 
@@ -145,7 +146,7 @@ def trigger_deployment(
     set_deployment_outputs(trigger_resp)
 
 
-def _sanitize_value(value) -> str:
+def _sanitize_value(value: Any) -> str:
     """Sanitize a value to prevent newline injection attacks."""
     return str(value).replace('\n', ' ').replace('\r', ' ')
 
@@ -166,7 +167,7 @@ def _output_using_deprecated_format(_id, api_url: str, environment: str, sha: st
     print(f"::set-output name=deployment_sha7::{safe_sha7}")
 
 
-def set_deployment_outputs(deployment_response):
+def set_deployment_outputs(deployment_response: requests.Response) -> None:
     # Set outputs
     deployment = deployment_response.json()
     _id = deployment["id"]

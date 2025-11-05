@@ -145,6 +145,15 @@ def trigger_deployment(
     set_deployment_outputs(trigger_resp)
 
 
+def _output_using_deprecated_format(_id, api_url, environment, sha, sha7):
+    """Helper function to output deployment data using deprecated ::set-output format."""
+    print(f"::set-output name=deployment_id::{_id}")
+    print(f"::set-output name=deployment_api_url::{api_url}")
+    print(f"::set-output name=deployment_environment::{environment}")
+    print(f"::set-output name=deployment_sha::{sha}")
+    print(f"::set-output name=deployment_sha7::{sha7}")
+
+
 def set_deployment_outputs(deployment_response):
     # Set outputs
     deployment = deployment_response.json()
@@ -167,18 +176,10 @@ def set_deployment_outputs(deployment_response):
         except (IOError, OSError) as e:
             error(f"Failed to write to GITHUB_OUTPUT file: {e}")
             # Fall back to deprecated format if file write fails
-            print(f"::set-output name=deployment_id::{_id}")
-            print(f"::set-output name=deployment_api_url::{api_url}")
-            print(f"::set-output name=deployment_environment::{environment}")
-            print(f"::set-output name=deployment_sha::{sha}")
-            print(f"::set-output name=deployment_sha7::{sha7}")
+            _output_using_deprecated_format(_id, api_url, environment, sha, sha7)
     else:
         # Backward compatibility: use deprecated ::set-output format
-        print(f"::set-output name=deployment_id::{_id}")
-        print(f"::set-output name=deployment_api_url::{api_url}")
-        print(f"::set-output name=deployment_environment::{environment}")
-        print(f"::set-output name=deployment_sha::{sha}")
-        print(f"::set-output name=deployment_sha7::{sha7}")
+        _output_using_deprecated_format(_id, api_url, environment, sha, sha7)
 
 
 def validate_pr(pr: dict) -> None:

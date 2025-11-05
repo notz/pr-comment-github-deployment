@@ -151,7 +151,7 @@ def _sanitize_value(value: Any) -> str:
     return str(value).replace('\n', ' ').replace('\r', ' ')
 
 
-def _output_using_deprecated_format(_id, api_url: str, environment: str, sha: str, sha7: str) -> None:
+def _output_using_deprecated_format(_id: Any, api_url: str, environment: str, sha: str, sha7: str) -> None:
     """Helper function to output deployment data using deprecated ::set-output format."""
     # Sanitize values to prevent newline injection attacks
     safe_id = _sanitize_value(_id)

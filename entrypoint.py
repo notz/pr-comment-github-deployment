@@ -145,13 +145,25 @@ def trigger_deployment(
     set_deployment_outputs(trigger_resp)
 
 
+def _sanitize_value(value):
+    """Sanitize a value to prevent newline injection attacks."""
+    return str(value).replace('\n', ' ').replace('\r', ' ')
+
+
 def _output_using_deprecated_format(_id, api_url, environment, sha, sha7):
     """Helper function to output deployment data using deprecated ::set-output format."""
-    print(f"::set-output name=deployment_id::{_id}")
-    print(f"::set-output name=deployment_api_url::{api_url}")
-    print(f"::set-output name=deployment_environment::{environment}")
-    print(f"::set-output name=deployment_sha::{sha}")
-    print(f"::set-output name=deployment_sha7::{sha7}")
+    # Sanitize values to prevent newline injection attacks
+    safe_id = _sanitize_value(_id)
+    safe_api_url = _sanitize_value(api_url)
+    safe_environment = _sanitize_value(environment)
+    safe_sha = _sanitize_value(sha)
+    safe_sha7 = _sanitize_value(sha7)
+    
+    print(f"::set-output name=deployment_id::{safe_id}")
+    print(f"::set-output name=deployment_api_url::{safe_api_url}")
+    print(f"::set-output name=deployment_environment::{safe_environment}")
+    print(f"::set-output name=deployment_sha::{safe_sha}")
+    print(f"::set-output name=deployment_sha7::{safe_sha7}")
 
 
 def set_deployment_outputs(deployment_response):
@@ -169,18 +181,11 @@ def set_deployment_outputs(deployment_response):
         try:
             with open(github_output, "a") as f:
                 # Sanitize values to prevent newline injection attacks
-                # Replace newlines and carriage returns with spaces
-                safe_id = str(_id).replace('\n', ' ').replace('\r', ' ')
-                safe_api_url = str(api_url).replace('\n', ' ').replace('\r', ' ')
-                safe_environment = str(environment).replace('\n', ' ').replace('\r', ' ')
-                safe_sha = str(sha).replace('\n', ' ').replace('\r', ' ')
-                safe_sha7 = str(sha7).replace('\n', ' ').replace('\r', ' ')
-                
-                f.write(f"deployment_id={safe_id}\n")
-                f.write(f"deployment_api_url={safe_api_url}\n")
-                f.write(f"deployment_environment={safe_environment}\n")
-                f.write(f"deployment_sha={safe_sha}\n")
-                f.write(f"deployment_sha7={safe_sha7}\n")
+                f.write(f"deployment_id={_sanitize_value(_id)}\n")
+                f.write(f"deployment_api_url={_sanitize_value(api_url)}\n")
+                f.write(f"deployment_environment={_sanitize_value(environment)}\n")
+                f.write(f"deployment_sha={_sanitize_value(sha)}\n")
+                f.write(f"deployment_sha7={_sanitize_value(sha7)}\n")
         except (IOError, OSError) as e:
             error(f"Failed to write to GITHUB_OUTPUT file: {e}")
             # Fall back to deprecated format if file write fails

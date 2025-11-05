@@ -168,11 +168,19 @@ def set_deployment_outputs(deployment_response):
     if github_output:
         try:
             with open(github_output, "a") as f:
-                f.write(f"deployment_id={_id}\n")
-                f.write(f"deployment_api_url={api_url}\n")
-                f.write(f"deployment_environment={environment}\n")
-                f.write(f"deployment_sha={sha}\n")
-                f.write(f"deployment_sha7={sha7}\n")
+                # Sanitize values to prevent newline injection attacks
+                # Replace newlines and carriage returns with spaces
+                safe_id = str(_id).replace('\n', ' ').replace('\r', ' ')
+                safe_api_url = str(api_url).replace('\n', ' ').replace('\r', ' ')
+                safe_environment = str(environment).replace('\n', ' ').replace('\r', ' ')
+                safe_sha = str(sha).replace('\n', ' ').replace('\r', ' ')
+                safe_sha7 = str(sha7).replace('\n', ' ').replace('\r', ' ')
+                
+                f.write(f"deployment_id={safe_id}\n")
+                f.write(f"deployment_api_url={safe_api_url}\n")
+                f.write(f"deployment_environment={safe_environment}\n")
+                f.write(f"deployment_sha={safe_sha}\n")
+                f.write(f"deployment_sha7={safe_sha7}\n")
         except (IOError, OSError) as e:
             error(f"Failed to write to GITHUB_OUTPUT file: {e}")
             # Fall back to deprecated format if file write fails

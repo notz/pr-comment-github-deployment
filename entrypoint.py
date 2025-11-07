@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+from typing import Any
 
 import requests
 
@@ -16,7 +17,7 @@ def debug(msg: str) -> None:
 
 
 def error(msg: str) -> None:
-    print(f"::error ::{msg}")
+    print(f"::error::{msg}")
 
 
 def add_comment(url: str, msg: str, is_error: bool = False) -> None:
@@ -145,7 +146,12 @@ def trigger_deployment(
     set_deployment_outputs(trigger_resp)
 
 
-def set_deployment_outputs(deployment_response):
+def _sanitize_value(value: Any) -> str:
+    """Sanitize a value to prevent newline injection attacks."""
+    return str(value).replace('\n', ' ').replace('\r', ' ')
+
+
+def set_deployment_outputs(deployment_response: requests.Response) -> None:
     # Set outputs
     deployment = deployment_response.json()
     _id = deployment["id"]
@@ -153,11 +159,17 @@ def set_deployment_outputs(deployment_response):
     environment = deployment["environment"]
     sha = deployment["sha"]
     sha7 = sha[0:7]
-    print(f"::set-output name=deployment_id::{_id}")
-    print(f"::set-output name=deployment_api_url::{api_url}")
-    print(f"::set-output name=deployment_environment::{environment}")
-    print(f"::set-output name=deployment_sha::{sha}")
-    print(f"::set-output name=deployment_sha7::{sha7}")
+    
+    # Write outputs to GITHUB_OUTPUT file
+    github_output = os.environ.get("GITHUB_OUTPUT")
+    if github_output:
+        with open(github_output, "a") as f:
+            # Sanitize values to prevent newline injection attacks
+            f.write(f"deployment_id={_sanitize_value(_id)}\n")
+            f.write(f"deployment_api_url={_sanitize_value(api_url)}\n")
+            f.write(f"deployment_environment={_sanitize_value(environment)}\n")
+            f.write(f"deployment_sha={_sanitize_value(sha)}\n")
+            f.write(f"deployment_sha7={_sanitize_value(sha7)}\n")
 
 
 def validate_pr(pr: dict) -> None:
